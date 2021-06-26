@@ -1,3 +1,3 @@
-# blub
+# PupsPupsBot
 
-Fietie Notifier
+fietje Notifier

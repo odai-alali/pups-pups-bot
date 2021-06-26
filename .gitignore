@@ -3,4 +3,4 @@ dist
 .idea
 coverage
 .env
-chatIds
+deploy.tar

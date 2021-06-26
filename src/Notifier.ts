@@ -4,7 +4,7 @@ import * as path from 'path';
 import { BookableDay } from './BookableDay';
 import moment from 'moment';
 
-const CHAT_IDS_FILE = path.resolve(__dirname + '/../chatIds');
+const CHAT_IDS_FILE = path.resolve(__dirname + '/../_data/chatIds');
 
 export class Notifier {
   private chatIds: number[];

@@ -7,7 +7,8 @@
     "build": "tsc",
     "test": "jest",
     "lint": "eslint ./src ./tests --ext .ts",
-    "run": "ts-node ./src/index.ts"
+    "run": "ts-node ./src/index.ts",
+    "start": "pm2 start ecosystem.config.json --no-daemon"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +33,7 @@
     "cron": "^1.8.2",
     "dotenv": "^10.0.0",
     "moment": "^2.29.1",
+    "pm2": "^5.1.0",
     "puppeteer": "^10.0.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",

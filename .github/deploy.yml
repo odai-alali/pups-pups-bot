@@ -1,0 +1,25 @@
+name: workflow
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  backend-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master'}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js v14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Deploy
+        working-directory: backend
+        run: |
+          yarn build
+          yarn global add caprover
+          export PATH="$PATH:$(yarn global bin)"
+          tar -cvf ./deploy.tar --exclude='node_modules' --exclude='tests' ./*
+          caprover deploy -t ./deploy.tar -h ${{ secrets.CAPROVER_HOST }} -p ${{ secrets.CAPROVER_PASSWORD }} -a ${{ secrets.CAPROVER_APP_NAME }}
