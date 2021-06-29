@@ -18,9 +18,10 @@ jobs:
       - name: Deploy
         working-directory: src
         run: |
+          ls -l
           yarn install
           yarn build
           yarn global add caprover
           export PATH="$PATH:$(yarn global bin)"
           tar -cvf ./deploy.tar --exclude='node_modules' --exclude='tests' ./*
-          caprover deploy -t ./deploy.tar -h ${{ secrets.CAPROVER_HOST }} -p ${{ secrets.CAPROVER_PASSWORD }} -a ${{ secrets.CAPROVER_APP_NAME }}
+          caprover deploy -t ./deploy.tar -h ${{ secrets.CAPROVER_HOST }} -p ${{ secrets.CAPROVER_PASSWORD }} -a ${{ secrets.CAPROVER_APP_NAME }} -b main
