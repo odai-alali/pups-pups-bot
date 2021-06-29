@@ -3,6 +3,7 @@ import HtmlParser from './HtmlParser';
 import { Notifier } from './Notifier';
 import * as path from 'path';
 import { BookableDay } from './BookableDay';
+import { CronJob } from 'cron';
 
 dotenv.config({ path: path.resolve(__dirname + '/../.env') });
 
@@ -20,6 +21,13 @@ const getFilterdBookableDays = async () => {
   );
 };
 
-getFilterdBookableDays().then((bookableDays) => {
+// getFilterdBookableDays().then((bookableDays) => {
+//   notifier.sendMessage(bookableDays);
+// });
+
+const cron = new CronJob('0 */6 * * *', async () => {
+  const bookableDays = await getFilterdBookableDays();
   notifier.sendMessage(bookableDays);
 });
+
+cron.start();

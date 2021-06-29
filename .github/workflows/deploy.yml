@@ -18,7 +18,7 @@ jobs:
       - name: Deploy
         working-directory: backend
         run: |
-          ls -la
+          find src
           yarn install
           yarn build
           yarn global add caprover

@@ -3,8 +3,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { BookableDay } from './BookableDay';
 import moment from 'moment';
+import HtmlParser from './HtmlParser';
 
 const CHAT_IDS_FILE = path.resolve(__dirname + '/../_data/chatIds');
+
+const URL = 'https://www.fietje-lastenrad.de/cb-items/fietje4/#timeframe76';
+const htmlParser = new HtmlParser();
 
 export class Notifier {
   private chatIds: number[];
@@ -20,10 +24,33 @@ export class Notifier {
 
   public startBot(): void {
     this.bot.start((ctx) => {
-      ctx.reply(
-        'OK!, I will notify with a message when I find a perfect day to book your bike',
-      );
+      ctx.message;
+      ctx.reply('OK!');
       this.addChatId(ctx.message.chat.id);
+    });
+
+    this.bot.command('/friday', async (ctx) => {
+      const bookableDays: BookableDay[] = await htmlParser.parseCalendar(URL);
+      const bookableFridays = bookableDays.filter((day) => day.isFriday);
+      if (bookableFridays.length === 0) {
+        ctx.reply('Nothing!');
+      } else {
+        this.sendMessage(bookableFridays);
+      }
+    });
+
+    this.bot.command('/saturday', async (ctx) => {
+      const bookableDays: BookableDay[] = await htmlParser.parseCalendar(URL);
+      const bookableSaturdays = bookableDays.filter((day) => day.isSaturday);
+      if (bookableSaturdays.length === 0) {
+        ctx.reply('Nothing!');
+      } else {
+        this.sendMessage(bookableSaturdays);
+      }
+    });
+
+    this.bot.command('/marie', async (ctx) => {
+      ctx.reply('🎂🎂🎂🎂🎂 HAPPY BIRTHDAY 🎂🎂🎂🎂🎂');
     });
 
     this.bot.launch();
