@@ -1,8 +1,15 @@
 import moment from 'moment';
 
 export class BookableDay {
-  date: Date;
-  calendarUrl: string;
+  private date: Date;
+
+  constructor(date: Date) {
+    this.date = date;
+  }
+
+  getDate(): Date {
+    return this.date;
+  }
 
   get isSaturday(): boolean {
     return this.date.getDay() === 6;
@@ -19,13 +26,7 @@ export class BookableDay {
   get isInThisWeek(): boolean {
     return moment().isoWeek() === moment(this.date).isoWeek();
   }
-
   get isInNextWeek(): boolean {
     return moment().isoWeek() + 1 === moment(this.date).isoWeek();
-  }
-
-  constructor(date: Date, calendarUrl: string) {
-    this.date = date;
-    this.calendarUrl = calendarUrl;
   }
 }

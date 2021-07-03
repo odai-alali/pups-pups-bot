@@ -1,17 +1,10 @@
 import $, { Cheerio, Element } from 'cheerio';
 import rp from 'request-promise';
 import { BookableDay } from './BookableDay';
+import Calendar from './parser/Calendar';
 
-export default class HtmlParser {
-  public selectCalendars(html: string): Cheerio<Element>[] {
-    const calendars: Cheerio<Element>[] = [];
-    $('.cb-timeframe', html).each((index, element) => {
-      calendars.push($(element));
-    });
-    return calendars;
-  }
-
-  public getAvailableDates(calendar: Cheerio<Element>): Date[] {
+class HtmlParser {
+  private getAvailableDates(calendar: Cheerio<Element>): Date[] {
     const bookableDates: Date[] = [];
     $('ul.cb-calendar li.bookable', calendar).each((index, element) => {
       const id = $(element).attr('id');
@@ -22,16 +15,32 @@ export default class HtmlParser {
     return bookableDates;
   }
 
-  public async parseCalendar(url: string): Promise<BookableDay[]> {
-    const bookableDays: BookableDay[] = [];
-    const html = await rp(url);
-    const calendars: Cheerio<Element>[] = this.selectCalendars(html);
-    for (const calendar of calendars) {
-      const availableDates = this.getAvailableDates(calendar);
-      for (const availableDat of availableDates) {
-        bookableDays.push(new BookableDay(availableDat, url));
-      }
+  public async parseCalendarsUrl(urls: string[]): Promise<Calendar[]> {
+    const calendars: Calendar[] = [];
+
+    for (const url of urls) {
+      const html = await rp(url);
+
+      $('.cb-timeframe', html).each((index, element) => {
+        const calendarName = $('.cb-location-name', $(element)).text().trim();
+        const calendarAddress = $('.cb-address', $(element))
+          .contents()
+          .filter((index, node) => {
+            return node.nodeType === 3;
+          })
+          // .wrap('p')
+          .text()
+          .trim();
+        const availableDates = this.getAvailableDates($(element));
+        const calendar = new Calendar(calendarName, calendarAddress, url);
+        for (const availableDat of availableDates) {
+          calendar.addBookableDay(new BookableDay(availableDat));
+        }
+        calendars.push(calendar);
+      });
     }
-    return bookableDays;
+    return calendars;
   }
 }
+
+export default HtmlParser;
