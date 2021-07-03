@@ -1,3 +1,6 @@
+// eslint-disable-next-line no-undef
+process.env.TZ = 'GMT';
+
 module.exports = {
   roots: ['<rootDir>'],
   testMatch: [

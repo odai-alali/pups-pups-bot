@@ -76,9 +76,9 @@ describe('HtmlParser', () => {
 
   it('should parse available dates for booking', async () => {
     const TIMESTAMP1 = 1617660000;
-    const DATE1 = '2021-04-06T00:00:00';
+    const DATE1 = '2021-04-05T22:00:00';
     const TIMESTAMP2 = 1617746400;
-    const DATE2 = '2021-04-07T00:00:00';
+    const DATE2 = '2021-04-06T22:00:00';
     givenResponse(`
             <div class="${CALENDAR_CLASS}">
                 <ul>
