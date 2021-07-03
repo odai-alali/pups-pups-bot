@@ -1,4 +1,4 @@
-import HtmlParser from '../../HtmlParser';
+import HtmlParser from '../../parser/HtmlParser';
 import { Context } from 'telegraf';
 import MessageFormatter from '../MessageFormatter';
 import { URLs } from '../../utils';

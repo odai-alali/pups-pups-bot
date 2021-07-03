@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export class BookableDay {
+class BookableDay {
   private date: Date;
 
   constructor(date: Date) {
@@ -42,3 +42,5 @@ export class BookableDay {
     return moment().isoWeek() + 1 === moment(this.date).isoWeek();
   }
 }
+
+export default BookableDay;

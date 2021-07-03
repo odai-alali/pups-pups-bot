@@ -1,4 +1,4 @@
-import { BookableDay } from '../BookableDay';
+import BookableDay from '../parser/BookableDay';
 import moment from 'moment';
 
 export default class MessageFormatter {

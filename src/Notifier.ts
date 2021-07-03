@@ -1,6 +1,6 @@
 import { Telegraf } from 'telegraf';
-import { BookableDay } from './BookableDay';
-import HtmlParser from './HtmlParser';
+import BookableDay from './parser/BookableDay';
+import HtmlParser from './parser/HtmlParser';
 import { URLs } from './utils';
 import MessageFormatter from './bot/MessageFormatter';
 import SimpleDb from './persistance/SimpleDb';

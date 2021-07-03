@@ -1,4 +1,4 @@
-import { BookableDay } from '../BookableDay';
+import BookableDay from './BookableDay';
 
 export declare type BookableDaysFilterFunction = (
   bookableDay: BookableDay,

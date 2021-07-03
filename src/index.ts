@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import HtmlParser from './HtmlParser';
+import HtmlParser from './parser/HtmlParser';
 import { Notifier } from './Notifier';
 import * as path from 'path';
 import { CronJob } from 'cron';

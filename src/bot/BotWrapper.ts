@@ -1,5 +1,5 @@
 import { Telegraf } from 'telegraf';
-import HtmlParser from '../HtmlParser';
+import HtmlParser from '../parser/HtmlParser';
 import BookableDaysFilterCommand from './commands/BookableDaysFilterCommand';
 import SimpleDb from '../persistance/SimpleDb';
 

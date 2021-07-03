@@ -1,5 +1,5 @@
 import Calendar from '../../src/parser/Calendar';
-import { BookableDay } from '../../src/BookableDay';
+import BookableDay from '../../src/parser/BookableDay';
 
 describe('Calendar', () => {
   const CALENDAR = 'Calendar1';
