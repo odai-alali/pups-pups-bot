@@ -23,6 +23,18 @@ export class BookableDay {
     return this.date.getDay() === 4;
   }
 
+  get isWednesday(): boolean {
+    return this.date.getDay() === 3;
+  }
+
+  get isTuesday(): boolean {
+    return this.date.getDay() === 2;
+  }
+
+  get isMonday(): boolean {
+    return this.date.getDay() === 1;
+  }
+
   get isInThisWeek(): boolean {
     return moment().isoWeek() === moment(this.date).isoWeek();
   }

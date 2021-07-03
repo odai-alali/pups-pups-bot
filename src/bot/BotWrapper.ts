@@ -35,6 +35,30 @@ class BotWrapper {
     });
 
     this.bot.command(
+      '/monday',
+      new BookableDaysFilterCommand((bookableDay) => bookableDay.isMonday)
+        .command,
+    );
+
+    this.bot.command(
+      '/tuesday',
+      new BookableDaysFilterCommand((bookableDay) => bookableDay.isTuesday)
+        .command,
+    );
+
+    this.bot.command(
+      '/wednesday',
+      new BookableDaysFilterCommand((bookableDay) => bookableDay.isWednesday)
+        .command,
+    );
+
+    this.bot.command(
+      '/thursday',
+      new BookableDaysFilterCommand((bookableDay) => bookableDay.isThursday)
+        .command,
+    );
+
+    this.bot.command(
       '/friday',
       new BookableDaysFilterCommand((bookableDay) => bookableDay.isFriday)
         .command,
