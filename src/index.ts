@@ -21,11 +21,6 @@ wrapper.launchBot(bot, htmlParser).then(() => {
   console.log('bot launched');
   const notifier = new Notifier(bot);
 
-  // DELETE
-  notifier.sendToAll(
-    `<b>I'm upgraded!</b> ${'\n'}The search for bookable days will be run on the calendars of Findorf and Schwackhausen.`,
-  );
-
   const cron = new CronJob('0 */6 * * *', async () => {
     notifier.notifyBookableDays();
   });
