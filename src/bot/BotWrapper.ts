@@ -69,10 +69,6 @@ class BotWrapper {
       new BookableDaysFilterCommand((bookableDay) => bookableDay.isSaturday)
         .command,
     );
-
-    this.bot.command('/test', async (ctx) => {
-      ctx.reply('🎂🎂🎂🎂🎂 HAPPY BIRTHDAY 🎂🎂🎂🎂🎂');
-    });
   }
 }
 
