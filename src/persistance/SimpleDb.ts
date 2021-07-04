@@ -3,11 +3,10 @@ import path from 'path';
 
 // const OLD_CHAT_IDS_FILE = path.resolve(__dirname + '/../_data/chatIds');
 
-const CHAT_IDS_FILE = path.resolve(__dirname + '/../../_data/chatIds');
+export const CHAT_IDS_FILE = path.resolve(__dirname + '/../../_data/chatIds');
 
 class SimpleDb {
-  private static instance: SimpleDb;
-  private chatIds: number[];
+  private readonly chatIds: number[];
 
   constructor() {
     // this.migrateFromOldFile();
@@ -38,35 +37,6 @@ class SimpleDb {
       .map((id) => parseFloat(id))
       .filter((id) => !isNaN(id));
   }
-
-  // private loadChatIds(): number[] {
-  //   Notifier.createChatIdsIfNotExists();
-  //   const content = fs.readFileSync(CHAT_IDS_FILE, 'utf-8');
-  //   return content
-  //     .split('\n')
-  //     .map((id) => parseFloat(id))
-  //     .filter((id) => !isNaN(id));
-  // }
-
-  public static getInstance(): SimpleDb {
-    if (!SimpleDb.instance) {
-      SimpleDb.instance = new SimpleDb();
-    }
-
-    return SimpleDb.instance;
-  }
-
-  // private migrateFromOldFile() {
-  //   if (fs.existsSync(OLD_CHAT_IDS_FILE)) {
-  //     const content = fs.readFileSync(OLD_CHAT_IDS_FILE, 'utf-8');
-  //     const chatIds: string[] = content
-  //       .split('\n')
-  //       .map((id) => parseFloat(id))
-  //       .filter((id) => !isNaN(id));
-  //
-  //
-  //   }
-  // }
 }
 
 export default SimpleDb;

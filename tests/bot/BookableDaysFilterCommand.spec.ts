@@ -8,15 +8,9 @@ jest.mock('../../src/parser/HtmlParser');
 jest.mock('../../src/bot/MessageFormatter');
 
 function givenHtmlParserReturns(calendars: Calendar[]) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  HtmlParser.mockImplementation(() => {
-    return {
-      parseCalendarsUrl: () => {
-        return calendars;
-      },
-    };
-  });
+  HtmlParser.prototype.parseCalendarsUrl = jest
+    .fn()
+    .mockResolvedValue(calendars);
 }
 
 const FORMATTED_MESSAGES = 'Formatted Message';

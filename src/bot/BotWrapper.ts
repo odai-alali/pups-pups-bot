@@ -1,24 +1,17 @@
 import { Telegraf } from 'telegraf';
-import HtmlParser from '../parser/HtmlParser';
 import BookableDaysFilterCommand from './commands/BookableDaysFilterCommand';
 import SimpleDb from '../persistance/SimpleDb';
 
 class BotWrapper {
-  private static instance: BotWrapper;
-  private htmlParser!: HtmlParser;
   private bot!: Telegraf;
+  private simpleDb: SimpleDb;
 
-  public static getInstance(): BotWrapper {
-    if (!BotWrapper.instance) {
-      BotWrapper.instance = new BotWrapper();
-    }
-    return BotWrapper.instance;
+  constructor(bot: Telegraf, simpleDb: SimpleDb) {
+    this.bot = bot;
+    this.simpleDb = simpleDb;
   }
 
-  async launchBot(bot: Telegraf, htmlParse: HtmlParser): Promise<void> {
-    this.bot = bot;
-    this.htmlParser = htmlParse;
-
+  async launchBot(): Promise<void> {
     await this.registerBotCommands();
     await this.bot.launch();
 
@@ -31,7 +24,7 @@ class BotWrapper {
     this.bot.start((ctx) => {
       ctx.message;
       ctx.reply(`Hi ${ctx.message.from.first_name}!`);
-      SimpleDb.getInstance().addChatId(ctx.message.chat.id);
+      this.simpleDb.addChatId(ctx.message.chat.id);
     });
 
     this.bot.command(

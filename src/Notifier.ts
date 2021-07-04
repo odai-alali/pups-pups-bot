@@ -8,16 +8,18 @@ import SimpleDb from './persistance/SimpleDb';
 const htmlParser = new HtmlParser();
 
 export class Notifier {
-  private bot: Telegraf;
+  private readonly bot: Telegraf;
+  private readonly simpleDb: SimpleDb;
   private messageFormatter: MessageFormatter;
 
-  constructor(bot: Telegraf) {
+  constructor(bot: Telegraf, simpleDb: SimpleDb) {
     this.bot = bot;
+    this.simpleDb = simpleDb;
     this.messageFormatter = new MessageFormatter();
   }
 
   async sendToAll(message: string): Promise<void> {
-    for (const id of SimpleDb.getInstance().getChatIds()) {
+    for (const id of this.simpleDb.getChatIds()) {
       this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
     }
   }
@@ -34,7 +36,7 @@ export class Notifier {
           calendar.getAddress(),
           calendar.getBookableDays(filterFunction),
         );
-        for (const id of SimpleDb.getInstance().getChatIds()) {
+        for (const id of this.simpleDb.getChatIds()) {
           this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
         }
       }

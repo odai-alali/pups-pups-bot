@@ -16,7 +16,7 @@ jest.mock('request-promise');
 function givenResponse(htmlResponse: string) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  rp.mockImplementation(() => Promise.resolve(htmlResponse));
+  rp.mockReturnValue(Promise.resolve(htmlResponse));
 }
 
 describe('HtmlParser', () => {
