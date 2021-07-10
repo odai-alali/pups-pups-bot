@@ -20,7 +20,7 @@ export class Notifier {
 
   async sendToAll(message: string): Promise<void> {
     for (const id of this.simpleDb.getChatIds()) {
-      this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
+      await this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
     }
   }
 
@@ -37,7 +37,9 @@ export class Notifier {
           calendar.getBookableDays(filterFunction),
         );
         for (const id of this.simpleDb.getChatIds()) {
-          this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
+          await this.bot.telegram.sendMessage(id, message, {
+            parse_mode: 'HTML',
+          });
         }
       }
     }

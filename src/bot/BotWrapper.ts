@@ -1,14 +1,20 @@
-import { Telegraf } from 'telegraf';
-import BookableDaysFilterCommand from './commands/BookableDaysFilterCommand';
+import { Context, Telegraf } from 'telegraf';
 import SimpleDb from '../persistance/SimpleDb';
+import CommandService from './CommandService';
 
 class BotWrapper {
   private bot!: Telegraf;
   private simpleDb: SimpleDb;
+  private readonly commandService: CommandService;
 
-  constructor(bot: Telegraf, simpleDb: SimpleDb) {
+  constructor(
+    bot: Telegraf,
+    simpleDb: SimpleDb,
+    commandService: CommandService,
+  ) {
     this.bot = bot;
     this.simpleDb = simpleDb;
+    this.commandService = commandService;
   }
 
   async launchBot(): Promise<void> {
@@ -27,41 +33,16 @@ class BotWrapper {
       this.simpleDb.addChatId(ctx.message.chat.id);
     });
 
-    this.bot.command(
-      '/monday',
-      new BookableDaysFilterCommand((bookableDay) => bookableDay.isMonday)
-        .command,
+    this.bot.hears(new RegExp('^(?!/start$|/help).*'), (ctx) =>
+      this.onTextCommand(ctx),
     );
+  }
 
-    this.bot.command(
-      '/tuesday',
-      new BookableDaysFilterCommand((bookableDay) => bookableDay.isTuesday)
-        .command,
-    );
-
-    this.bot.command(
-      '/wednesday',
-      new BookableDaysFilterCommand((bookableDay) => bookableDay.isWednesday)
-        .command,
-    );
-
-    this.bot.command(
-      '/thursday',
-      new BookableDaysFilterCommand((bookableDay) => bookableDay.isThursday)
-        .command,
-    );
-
-    this.bot.command(
-      '/friday',
-      new BookableDaysFilterCommand((bookableDay) => bookableDay.isFriday)
-        .command,
-    );
-
-    this.bot.command(
-      '/saturday',
-      new BookableDaysFilterCommand((bookableDay) => bookableDay.isSaturday)
-        .command,
-    );
+  async onTextCommand(ctx: Context): Promise<unknown> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const answer = await this._commandService.query(ctx.message.text);
+    return ctx.reply(answer, { parse_mode: 'HTML' });
   }
 }
 

@@ -1,18 +1,37 @@
 import BotWrapper from '../../src/bot/BotWrapper';
 import { Telegraf } from 'telegraf';
 import SimpleDb from '../../src/persistance/SimpleDb';
+import CommandService from '../../src/bot/CommandService';
 
 const commandMock = jest.fn();
 const startMock = jest.fn();
 const launchMock = jest.fn();
+const onMock = jest.fn();
+const hearsMock = jest.fn();
 
 jest.mock('telegraf', () => ({
   Telegraf: () => ({
     command: commandMock,
     start: startMock,
     launch: launchMock,
+    on: onMock,
+    hears: hearsMock,
   }),
 }));
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const commandServiceMock: CommandService = {
+  query: jest.fn(),
+};
+
+function botWrapperFactory() {
+  return new BotWrapper(
+    new Telegraf('token'),
+    new SimpleDb(),
+    commandServiceMock,
+  );
+}
 
 describe('BotWrapper', () => {
   afterAll(() => {
@@ -23,28 +42,22 @@ describe('BotWrapper', () => {
     startMock.mockClear();
     launchMock.mockClear();
   });
-  it('should register bot commands and launch bot', async () => {
-    jest.mock('telegraf', () => ({
-      Telegraf: () => ({
-        command: commandMock,
-        start: startMock,
-        launch: launchMock,
-      }),
-    }));
 
-    const botWrapper = new BotWrapper(new Telegraf('token'), new SimpleDb());
+  it('should register bot commands and launch bot', async () => {
+    const botWrapper = botWrapperFactory();
     await botWrapper.launchBot();
+
     expect(startMock).toHaveBeenCalledTimes(1);
     expect(launchMock).toHaveBeenCalledTimes(1);
-    expect(commandMock).toHaveBeenCalledTimes(6);
-    expect(commandMock).toHaveBeenCalledWith('/monday', expect.any(Function));
-    expect(commandMock).toHaveBeenCalledWith('/tuesday', expect.any(Function));
-    expect(commandMock).toHaveBeenCalledWith(
-      '/wednesday',
+  });
+
+  it('should have command service on text', async () => {
+    const botWrapper = botWrapperFactory();
+    await botWrapper.launchBot();
+
+    expect(hearsMock).toHaveBeenCalledWith(
+      expect.any(RegExp),
       expect.any(Function),
     );
-    expect(commandMock).toHaveBeenCalledWith('/thursday', expect.any(Function));
-    expect(commandMock).toHaveBeenCalledWith('/friday', expect.any(Function));
-    expect(commandMock).toHaveBeenCalledWith('/saturday', expect.any(Function));
   });
 });

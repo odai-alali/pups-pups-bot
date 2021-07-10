@@ -5,6 +5,9 @@ import { CronJob } from 'cron';
 import BotWrapper from './bot/BotWrapper';
 import { Telegraf } from 'telegraf';
 import SimpleDb from './persistance/SimpleDb';
+import CommandService from './bot/CommandService';
+import HtmlParser from './parser/HtmlParser';
+import MessageFormatter from './bot/MessageFormatter';
 
 dotenv.config({ path: path.resolve(__dirname + '/../.env') });
 
@@ -14,7 +17,10 @@ if (!process.env.BOT_TOKEN) {
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const simpleDb = new SimpleDb();
-const wrapper = new BotWrapper(bot, simpleDb);
+const htmlParser = new HtmlParser();
+const messageFormatter = new MessageFormatter();
+const commandService = new CommandService(htmlParser, messageFormatter);
+const wrapper = new BotWrapper(bot, simpleDb, commandService);
 
 wrapper.launchBot().then(() => {
   // eslint-disable-next-line no-console

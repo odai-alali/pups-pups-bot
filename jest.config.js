@@ -15,6 +15,7 @@ module.exports = {
     'src/**/*.{js,jsx,ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
+    '!src/index.ts',
   ],
   globals: {
     'ts-jest': {
