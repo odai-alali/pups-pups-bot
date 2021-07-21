@@ -1,7 +1,7 @@
 import Calendar from '../../parser/Calendar';
 
 interface ICalendarsFilter {
-  filterCalendars(): Calendar[];
+  filterCalendars(calendars: Calendar[]): Calendar[];
 }
 
 export default ICalendarsFilter;

@@ -38,11 +38,13 @@ class BotWrapper {
     );
   }
 
-  async onTextCommand(ctx: Context): Promise<unknown> {
+  async onTextCommand(ctx: Context): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const answer = await this._commandService.query(ctx.message.text);
-    return ctx.reply(answer, { parse_mode: 'HTML' });
+    const answers = await this.commandService.query(ctx.message.text);
+    for (const answer of answers) {
+      await ctx.reply(answer, { parse_mode: 'HTML' });
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 import BotWrapper from '../../src/bot/BotWrapper';
-import { Telegraf } from 'telegraf';
+import { Telegraf, Context } from 'telegraf';
 import SimpleDb from '../../src/persistance/SimpleDb';
 import CommandService from '../../src/bot/CommandService';
 
@@ -19,11 +19,15 @@ jest.mock('telegraf', () => ({
   }),
 }));
 
+const queryMock = jest.fn();
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const commandServiceMock: CommandService = {
-  query: jest.fn(),
+  query: queryMock,
 };
+function givenQueryRetourns(result: unknown) {
+  queryMock.mockResolvedValue(result);
+}
 
 function botWrapperFactory() {
   return new BotWrapper(
@@ -59,5 +63,26 @@ describe('BotWrapper', () => {
       expect.any(RegExp),
       expect.any(Function),
     );
+  });
+
+  it('should reply for each message returned from command service query', async () => {
+    const botWrapper = botWrapperFactory();
+    givenQueryRetourns(['message1', 'message2']);
+    const contextMock = {
+      reply: jest.fn(),
+      message: {},
+    };
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    await botWrapper.onTextCommand(contextMock as Context);
+
+    expect(contextMock.reply).toHaveBeenCalledTimes(2);
+    expect(contextMock.reply).toHaveBeenCalledWith('message1', {
+      parse_mode: 'HTML',
+    });
+    expect(contextMock.reply).toHaveBeenCalledWith('message2', {
+      parse_mode: 'HTML',
+    });
   });
 });

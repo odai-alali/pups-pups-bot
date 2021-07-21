@@ -4,16 +4,14 @@ import DayToFilter from './DayToFilter';
 
 class DayCalendarsFilter implements ICalendarsFilter {
   private readonly day: DayToFilter;
-  private readonly calendars: Calendar[];
 
-  constructor(calendars: Calendar[], day: DayToFilter) {
-    this.calendars = calendars;
+  constructor(day: DayToFilter) {
     this.day = day;
   }
 
-  filterCalendars(): Calendar[] {
+  filterCalendars(calendars: Calendar[]): Calendar[] {
     const newCalendars: Calendar[] = [];
-    for (const calendar of this.calendars) {
+    for (const calendar of calendars) {
       const filteredCalendar = this.filterCalendarDays(calendar);
       if (filteredCalendar.getBookableDays().length) {
         newCalendars.push(filteredCalendar);
