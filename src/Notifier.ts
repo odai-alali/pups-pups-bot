@@ -1,9 +1,10 @@
 import { Telegraf } from 'telegraf';
-import BookableDay from './parser/BookableDay';
 import HtmlParser from './parser/HtmlParser';
 import { URLs } from './utils';
 import MessageFormatter from './bot/MessageFormatter';
 import SimpleDb from './persistance/SimpleDb';
+import DayCalendarsFilter from './bot/filter/DayCalendarsFilter';
+import DayToFilter from './bot/filter/DayToFilter';
 
 const htmlParser = new HtmlParser();
 
@@ -26,21 +27,18 @@ export class Notifier {
 
   async notifyBookableDays(): Promise<void> {
     const calendars = await htmlParser.parseCalendarsUrl(URLs);
-    const filterFunction = (day: BookableDay) => day.isFriday;
-
-    for (const calendar of calendars) {
-      if (calendar.getBookableDays(filterFunction).length) {
-        const message = this.messageFormatter.formatBookableDays(
-          calendar.getName(),
-          calendar.getUrl(),
-          calendar.getAddress(),
-          calendar.getBookableDays(filterFunction),
-        );
-        for (const id of this.simpleDb.getChatIds()) {
-          await this.bot.telegram.sendMessage(id, message, {
-            parse_mode: 'HTML',
-          });
-        }
+    const saturdayFilter = new DayCalendarsFilter(DayToFilter.SATURDAY);
+    const filteredCalendars = saturdayFilter.filterCalendars(calendars);
+    if (filteredCalendars.length) {
+      const notificationMessage = filteredCalendars
+        .map((filteredCalendar) =>
+          this.messageFormatter.formatCalendar(filteredCalendar),
+        )
+        .join('\n\n');
+      for (const id of this.simpleDb.getChatIds()) {
+        await this.bot.telegram.sendMessage(id, notificationMessage, {
+          parse_mode: 'HTML',
+        });
       }
     }
   }
