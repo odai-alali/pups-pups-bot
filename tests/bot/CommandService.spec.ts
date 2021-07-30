@@ -4,7 +4,7 @@ import Calendar from '../../src/parser/Calendar';
 import BookableDay from '../../src/parser/BookableDay';
 import DayCalendarsFilter from '../../src/bot/filter/DayCalendarsFilter';
 import MessageFormatter from '../../src/bot/MessageFormatter';
-import TextNormalizer from '../../src/bot/TextNormalizer';
+import TextAnalyzer from '../../src/bot/TextAnalyzer';
 import ICalendarsFilter from '../../src/bot/filter/ICalendarsFilter';
 
 jest.mock('../../src/parser/HtmlParser');
@@ -12,7 +12,7 @@ jest.mock('../../src/parser/BookableDay');
 jest.mock('../../src/parser/Calendar');
 jest.mock('../../src/bot/filter/DayCalendarsFilter');
 jest.mock('../../src/bot/MessageFormatter');
-jest.mock('../../src/bot/TextNormalizer');
+jest.mock('../../src/bot/TextAnalyzer');
 
 // const TODAY_DATE = new Date('2021-07-06T00:00:00');
 const MONDAY_DATE = new Date('2021-07-05T00:00:00');
@@ -27,8 +27,8 @@ const TUESDAY_DATE = new Date('2021-07-06T00:00:00');
 function commandServiceFactory() {
   const htmlParser = new HtmlParser();
   const messageFormatter = new MessageFormatter();
-  const textNormalizer = new TextNormalizer();
-  return new CommandService(htmlParser, messageFormatter, textNormalizer);
+  const textAnalyzer = new TextAnalyzer();
+  return new CommandService(htmlParser, messageFormatter, textAnalyzer);
 }
 
 function givenBookableDay(date: Date): BookableDay {
@@ -58,10 +58,10 @@ MessageFormatter.prototype.formatCalendar = formatCalendarMock;
 
 const normalizeTextMock = jest.fn();
 const extractFiltersFromTextMock = jest.fn();
-TextNormalizer.prototype.normalize = normalizeTextMock.mockImplementation(
+TextAnalyzer.prototype.normalize = normalizeTextMock.mockImplementation(
   (text) => text,
 );
-TextNormalizer.prototype.extractFiltersFromText = extractFiltersFromTextMock;
+TextAnalyzer.prototype.extractFiltersFromText = extractFiltersFromTextMock;
 function givenExtractedFilters(filters: ICalendarsFilter[]) {
   extractFiltersFromTextMock.mockReturnValue(filters);
 }

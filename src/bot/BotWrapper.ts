@@ -22,20 +22,32 @@ class BotWrapper {
     await this.bot.launch();
 
     // Enable graceful stop
-    process.once('SIGINT', () => this.bot.stop('SIGINT'));
-    process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
+    process.once('SIGINT', this.onInterrupt.bind(this));
+    process.once('SIGTERM', this.onTerminate.bind(this));
+  }
+
+  private onTerminate() {
+    this.bot.stop('SIGTERM');
+  }
+
+  private onInterrupt() {
+    this.bot.stop('SIGINT');
   }
 
   private async registerBotCommands() {
-    this.bot.start((ctx) => {
-      ctx.message;
-      ctx.reply(`Hi ${ctx.message.from.first_name}!`);
-      this.simpleDb.addChatId(ctx.message.chat.id);
-    });
+    this.bot.start(this.onStartCommand.bind(this));
 
-    this.bot.hears(new RegExp('^(?!/start$|/help).*'), (ctx) =>
-      this.onTextCommand(ctx),
+    this.bot.hears(
+      new RegExp('^(?!/start$|/help).*'),
+      this.onTextCommand.bind(this),
     );
+  }
+
+  async onStartCommand(ctx: Context): Promise<void> {
+    if (ctx.message?.chat && ctx.message.from) {
+      await ctx.reply(`Hi ${ctx.message.from.first_name}!`);
+      this.simpleDb.addChatId(ctx.message.chat.id as number);
+    }
   }
 
   async onTextCommand(ctx: Context): Promise<void> {

@@ -2,7 +2,7 @@ import DayToFilter from './filter/DayToFilter';
 import DayCalendarsFilter from './filter/DayCalendarsFilter';
 import ICalendarsFilter from './filter/ICalendarsFilter';
 
-class TextNormalizer {
+class TextAnalyzer {
   toLowerCase(text: string): string {
     return text.toLowerCase().trim();
   }
@@ -48,4 +48,4 @@ class TextNormalizer {
   }
 }
 
-export default TextNormalizer;
+export default TextAnalyzer;

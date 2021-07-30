@@ -1,17 +1,17 @@
 import HtmlParser from '../parser/HtmlParser';
 import { URLs } from '../utils';
 import MessageFormatter from './MessageFormatter';
-import TextNormalizer from './TextNormalizer';
+import TextAnalyzer from './TextAnalyzer';
 
 class CommandService {
   private readonly htmlParser: HtmlParser;
   private readonly messageFormatter: MessageFormatter;
-  private readonly textNormalizer: TextNormalizer;
+  private readonly textNormalizer: TextAnalyzer;
 
   constructor(
     htmlParser: HtmlParser,
     messageFormatter: MessageFormatter,
-    textNormalizer: TextNormalizer,
+    textNormalizer: TextAnalyzer,
   ) {
     this.htmlParser = htmlParser;
     this.messageFormatter = messageFormatter;

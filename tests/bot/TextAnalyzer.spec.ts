@@ -1,10 +1,10 @@
-import TextNormalizer from '../../src/bot/TextNormalizer';
+import TextAnalyzer from '../../src/bot/TextAnalyzer';
 import DayCalendarsFilter from '../../src/bot/filter/DayCalendarsFilter';
 import DayToFilter from '../../src/bot/filter/DayToFilter';
 
-describe('TextNormalizer', () => {
+describe('TextAnalyzer', () => {
   it('should convert all text to lower case and trim it', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.toLowerCase(' TEXT ');
 
@@ -12,7 +12,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should omit emojis', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.cleanEmojis('text😁');
 
@@ -20,7 +20,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should normalize text', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.normalize(
       ' This is a non normalized Text 😁 ',
@@ -30,7 +30,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should extract DayToFilter.MONDAY from normalized text', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.extractDaysToFilter(' monday 😁 ');
 
@@ -38,7 +38,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should extract DayToFilter.TUESDAY from normalized text', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.extractDaysToFilter(' Tuesday 😁 ');
 
@@ -46,7 +46,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should extract DayToFilter.WEDNESDAY from normalized text', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.extractDaysToFilter(' Wednesday 😁 ');
 
@@ -54,7 +54,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should extract DayToFilter.THURSDAY from normalized text', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.extractDaysToFilter(' Thursday 😁 ');
 
@@ -62,7 +62,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should extract DayToFilter.FRIDAY from normalized text', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.extractDaysToFilter(' FRIDAY 😁 ');
 
@@ -70,7 +70,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should extract DayToFilter.SATURDAY from normalized text', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.extractDaysToFilter(' Saturday 😁 ');
 
@@ -78,7 +78,7 @@ describe('TextNormalizer', () => {
   });
 
   it('should return a DayCalendarFilter for extracted DayToFilter', () => {
-    const textNormalizer = new TextNormalizer();
+    const textNormalizer = new TextAnalyzer();
 
     const actual = textNormalizer.extractFiltersFromText(' Saturday 😁 ');
 

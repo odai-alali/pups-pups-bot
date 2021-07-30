@@ -8,7 +8,7 @@ import SimpleDb from './persistance/SimpleDb';
 import CommandService from './bot/CommandService';
 import HtmlParser from './parser/HtmlParser';
 import MessageFormatter from './bot/MessageFormatter';
-import TextNormalizer from './bot/TextNormalizer';
+import TextAnalyzer from './bot/TextAnalyzer';
 
 dotenv.config({ path: path.resolve(__dirname + '/../.env') });
 
@@ -20,7 +20,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 const simpleDb = new SimpleDb();
 const htmlParser = new HtmlParser();
 const messageFormatter = new MessageFormatter();
-const textNormalizer = new TextNormalizer();
+const textNormalizer = new TextAnalyzer();
 const commandService = new CommandService(
   htmlParser,
   messageFormatter,
