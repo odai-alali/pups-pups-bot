@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { Notifier } from './Notifier';
 import * as path from 'path';
 import { CronJob } from 'cron';
 import BotWrapper from './bot/BotWrapper';
@@ -31,10 +30,9 @@ const wrapper = new BotWrapper(bot, simpleDb, commandService);
 wrapper.launchBot().then(() => {
   // eslint-disable-next-line no-console
   console.log('bot launched');
-  const notifier = new Notifier(bot, simpleDb);
 
   const cron = new CronJob('0 */6 * * *', async () => {
-    notifier.notifyBookableDays();
+    await wrapper.notifySubscribersForBookableSaturdays();
   });
 
   cron.start();

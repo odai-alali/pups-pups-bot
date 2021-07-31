@@ -58,6 +58,19 @@ class BotWrapper {
       await ctx.reply(answer, { parse_mode: 'HTML' });
     }
   }
+
+  async sendToAll(message: string): Promise<void> {
+    for (const id of this.simpleDb.getChatIds()) {
+      await this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
+    }
+  }
+
+  async notifySubscribersForBookableSaturdays(): Promise<void> {
+    const answers = await this.commandService.query('saturday');
+    for (const answer of answers) {
+      await this.sendToAll(answer);
+    }
+  }
 }
 
 export default BotWrapper;

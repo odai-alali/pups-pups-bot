@@ -18,6 +18,8 @@ let botHandlers: {
   ],
 };
 
+const sendMessageMock = jest.fn();
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const botMock: Telegraf = {
@@ -29,7 +31,10 @@ const botMock: Telegraf = {
     botHandlers.hearsHandler = [regex, cb];
   }),
   stop: jest.fn(),
-};
+  telegram: {
+    sendMessage: sendMessageMock,
+  },
+} as Telegraf;
 
 const triggerStart = async (contextMock: Context) => {
   await botHandlers.startHandler(contextMock);
@@ -55,11 +60,18 @@ function givenQueryReturns(result: unknown) {
   queryMock.mockResolvedValue(result);
 }
 
+const mockedGetChatIds = jest.fn().mockReturnValue([]);
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const simpleDbMock: SimpleDb = {
   addChatId: jest.fn(),
+  getChatIds: mockedGetChatIds,
 };
+
+function givenChatIds(chatIds: number[]) {
+  mockedGetChatIds.mockReturnValue(chatIds);
+}
 
 function botWrapperFactory() {
   return new BotWrapper(botMock, simpleDbMock, commandServiceMock);
@@ -192,5 +204,37 @@ describe('BotWrapper', () => {
     expect(contextMock.reply).toHaveBeenCalledWith('message2', {
       parse_mode: 'HTML',
     });
+  });
+
+  it('should send message to all registered users', async () => {
+    const botWrapper = botWrapperFactory();
+    givenChatIds([11, 22, 33]);
+    const MESSAGE = 'message';
+
+    await botWrapper.sendToAll(MESSAGE);
+
+    expect(simpleDbMock.getChatIds).toHaveBeenCalled();
+    expect(sendMessageMock).toHaveBeenCalledTimes(3);
+    expect(sendMessageMock).toHaveBeenCalledWith(11, MESSAGE, {
+      parse_mode: 'HTML',
+    });
+    expect(sendMessageMock).toHaveBeenCalledWith(22, MESSAGE, {
+      parse_mode: 'HTML',
+    });
+    expect(sendMessageMock).toHaveBeenCalledWith(33, MESSAGE, {
+      parse_mode: 'HTML',
+    });
+  });
+
+  it('should notify all subscribers for bookable saturdays', async () => {
+    const botWrapper = botWrapperFactory();
+    const ANSWER = 'answer1';
+    const sendToAllSpy = jest.spyOn(botWrapper, 'sendToAll');
+    givenQueryReturns([ANSWER]);
+
+    await botWrapper.notifySubscribersForBookableSaturdays();
+
+    expect(commandServiceMock.query).toHaveBeenCalledWith('saturday');
+    expect(sendToAllSpy).toHaveBeenCalledWith(ANSWER);
   });
 });
