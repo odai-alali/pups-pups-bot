@@ -47,6 +47,10 @@ lokiDb
       // eslint-disable-next-line no-console
       console.log('bot launched');
 
+      wrapper.sendToAll(
+        'Hi, I have got a new database, send this command to subscribe to the new DB. /start',
+      );
+
       const cron = new CronJob('0 */6 * * *', async () => {
         await wrapper.notifySubscribersForBookableSaturdays();
       });
