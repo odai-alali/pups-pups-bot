@@ -1,63 +1,77 @@
 import fs from 'fs';
-import SimpleDb, { CHAT_IDS_FILE } from '../../src/persistance/SimpleDb';
+import SimpleDb, {
+  CollectionName,
+  SubscriberDoc,
+} from '../../src/persistance/SimpleDb';
+import Loki from '@lokidb/loki';
 
 jest.mock('fs');
 
-const existSyncSpy = jest.spyOn(fs, 'existsSync');
 const readFileSyncSpy = jest.spyOn(fs, 'readFileSync');
-const writeFileSync = jest.spyOn(fs, 'writeFileSync');
 
-describe('SimpleDb', () => {
-  afterAll(() => {
-    jest.restoreAllMocks();
+const memoryDb: Loki = new Loki('test.db');
+
+function simpleDbFactory() {
+  return new SimpleDb(memoryDb);
+}
+
+describe('SimpleDb mit loki', () => {
+  beforeEach(async () => {
+    await memoryDb.removeCollection(CollectionName.SUBSCRIBERS);
   });
+  it('should add subscriber', async () => {
+    const simpleDb = simpleDbFactory();
+    const chatId = 111;
+    const username = 'user.name';
 
-  afterEach(() => {
-    existSyncSpy.mockRestore();
-    existSyncSpy.mockRestore();
-    writeFileSync.mockRestore();
+    await simpleDb.addSubscriber(chatId, username);
+
+    const collection = await memoryDb.getCollection<SubscriberDoc>(
+      CollectionName.SUBSCRIBERS,
+    );
+    const count = await collection.count();
+    expect(count).toEqual(1);
+    collection.findOne({
+      chatId: 1,
+    });
+    const doc = await collection.findOne({ chatId });
+    expect(doc).toEqual(
+      expect.objectContaining({
+        chatId,
+        username,
+      }),
+    );
   });
+  it('should not double insert username', () => {
+    const simpleDb = simpleDbFactory();
+    const chatId = 111;
+    const username = 'user.name';
 
-  it('should create db file if does not exist', () => {
-    existSyncSpy.mockReturnValue(false);
+    simpleDb.addSubscriber(chatId, username);
+    simpleDb.addSubscriber(chatId, username);
+
+    const collection = memoryDb.getCollection<SubscriberDoc>(
+      CollectionName.SUBSCRIBERS,
+    );
+    expect(collection.count()).toEqual(1);
+    expect(collection.findOne({ chatId })).toEqual(
+      expect.objectContaining({
+        chatId,
+        username,
+      }),
+    );
+  });
+  it('should return all chat ids in array', async () => {
     readFileSyncSpy.mockReturnValue('');
+    const collection = memoryDb.addCollection<SubscriberDoc>(
+      CollectionName.SUBSCRIBERS,
+    );
+    collection.insert({ chatId: 111, username: 'user1' });
+    collection.insert({ chatId: 222, username: 'user2' });
+    const simpleDb = simpleDbFactory();
 
-    new SimpleDb();
+    const chatIds = simpleDb.getChatIdsLoki();
 
-    expect(writeFileSync).toHaveBeenCalledWith(CHAT_IDS_FILE, '');
-  });
-
-  it('should load db file', () => {
-    existSyncSpy.mockReturnValue(true);
-    readFileSyncSpy.mockReturnValue('1\n2');
-    const simpleDb = new SimpleDb();
-
-    const chatIds = simpleDb.getChatIds();
-
-    expect(existSyncSpy).toHaveBeenCalledWith(CHAT_IDS_FILE);
-    expect(readFileSyncSpy).toHaveBeenCalledWith(CHAT_IDS_FILE, 'utf-8');
-    expect(chatIds).toEqual([1, 2]);
-  });
-
-  it('should add chat id to the db', () => {
-    const CHAT_ID = 111;
-    existSyncSpy.mockReturnValue(true);
-    readFileSyncSpy.mockReturnValue('');
-    const simpleDb = new SimpleDb();
-
-    simpleDb.addChatId(CHAT_ID);
-
-    expect(writeFileSync).toHaveBeenCalledWith(CHAT_IDS_FILE, `${CHAT_ID}`);
-  });
-
-  it('should not write file if chat id already exists', () => {
-    const CHAT_ID = 111;
-    existSyncSpy.mockReturnValue(true);
-    readFileSyncSpy.mockReturnValue(`${CHAT_ID}`);
-    const simpleDb = new SimpleDb();
-
-    simpleDb.addChatId(CHAT_ID);
-
-    expect(writeFileSync).not.toHaveBeenCalled();
+    expect(chatIds).toEqual([111, 222]);
   });
 });

@@ -517,6 +517,25 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@lokidb/fs-storage@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@lokidb/fs-storage/-/fs-storage-2.1.0.tgz#39976fa65df58fd3c26298b82c392feffb46d094"
+  integrity sha512-PFZa4aBhzfP091qleB8En6A+pY+9cbiHlpIxGh7X4g1qsSD0H0OYf54RPrrtAgACb17tK18hj5Ckhlp39F3sOA==
+  dependencies:
+    "@lokidb/loki" "2.1.0"
+
+"@lokidb/loki@2.1.0", "@lokidb/loki@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@lokidb/loki/-/loki-2.1.0.tgz#f707e184016ce57d6dd12013938c33f9c540960e"
+  integrity sha512-u2VH/4h4kZww23bak5I/oRai8VqIZCSuqiLbuSHpYXHB9Na5E9KNazh59prgUyvMzfooY7XKiHejbKVxFoAEOQ==
+
+"@lokidb/memory-storage@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@lokidb/memory-storage/-/memory-storage-2.1.0.tgz#a5aa9a6dee67fe4b9145413386639a38bf47de13"
+  integrity sha512-dywAV1ZaAq0x/aZg/P6xqUkjPB12zh3JMPTCmXodOC3NFnQK0GkxAD2tzTnP0Zcd0OhtnIeUR+SW7r+xsJC6hQ==
+  dependencies:
+    "@lokidb/loki" "2.1.0"
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"

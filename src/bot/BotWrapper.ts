@@ -46,7 +46,10 @@ class BotWrapper {
   async onStartCommand(ctx: Context): Promise<void> {
     if (ctx.message?.chat && ctx.message.from) {
       await ctx.reply(`Hi ${ctx.message.from.first_name}!`);
-      this.simpleDb.addChatId(ctx.message.chat.id as number);
+      this.simpleDb.addSubscriber(
+        ctx.message.chat.id as number,
+        ctx.message.from.username as string,
+      );
     }
   }
 
@@ -60,7 +63,7 @@ class BotWrapper {
   }
 
   async sendToAll(message: string): Promise<void> {
-    for (const id of this.simpleDb.getChatIds()) {
+    for (const id of this.simpleDb.getChatIdsLoki()) {
       await this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
     }
   }

@@ -1,41 +1,51 @@
-import fs from 'fs';
-import path from 'path';
+import { Collection, Loki } from '@lokidb/loki';
 
-// const OLD_CHAT_IDS_FILE = path.resolve(__dirname + '/../_data/chatIds');
+export enum CollectionName {
+  SUBSCRIBERS = 'subscribers',
+}
 
-export const CHAT_IDS_FILE = path.resolve(__dirname + '/../../_data/chatIds');
+export declare type SubscriberDoc = {
+  chatId: number;
+  username: string;
+};
 
 class SimpleDb {
-  private readonly chatIds: number[];
-
-  constructor() {
-    // this.migrateFromOldFile();
-    this.chatIds = this.loadChatIds();
+  private readonly dbInstance: Loki;
+  constructor(dbInstance: Loki) {
+    this.dbInstance = dbInstance;
   }
 
-  private static createChatIdsIfNotExists() {
-    if (!fs.existsSync(CHAT_IDS_FILE)) {
-      fs.writeFileSync(CHAT_IDS_FILE, '');
+  addSubscriber(chatId: number, username: string): void {
+    const subscriberCollection = this.getSubscriberCollection();
+    const existingSubscriber = subscriberCollection.by('username', username);
+
+    if (existingSubscriber) {
+      existingSubscriber.chatId = chatId;
+      subscriberCollection.update(existingSubscriber);
+    } else {
+      subscriberCollection.insert({ chatId, username });
     }
   }
 
-  public getChatIds(): number[] {
-    return this.chatIds;
+  private getSubscriberCollection(): Collection<SubscriberDoc> {
+    const collection = this.dbInstance.getCollection<SubscriberDoc>(
+      CollectionName.SUBSCRIBERS,
+    );
+    if (!collection) {
+      return this.dbInstance.addCollection<SubscriberDoc>(
+        CollectionName.SUBSCRIBERS,
+        {
+          unique: ['username'],
+        },
+      );
+    }
+    return collection;
   }
 
-  public addChatId(id: number): void {
-    if (this.chatIds.includes(id)) return;
-    this.chatIds.push(id);
-    fs.writeFileSync(CHAT_IDS_FILE, this.chatIds.join('\n'));
-  }
+  getChatIdsLoki(): number[] {
+    const subscriberCollection = this.getSubscriberCollection();
 
-  private loadChatIds(): number[] {
-    SimpleDb.createChatIdsIfNotExists();
-    const content = fs.readFileSync(CHAT_IDS_FILE, 'utf-8');
-    return content
-      .split('\n')
-      .map((id) => parseFloat(id))
-      .filter((id) => !isNaN(id));
+    return subscriberCollection.find().map((subscriber) => subscriber.chatId);
   }
 }
 

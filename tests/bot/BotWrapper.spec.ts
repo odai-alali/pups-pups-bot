@@ -61,16 +61,18 @@ function givenQueryReturns(result: unknown) {
 }
 
 const mockedGetChatIds = jest.fn().mockReturnValue([]);
-
+const mockedGetChatIdsLoki = jest.fn().mockReturnValue([]);
+const mockedAddSubscriber = jest.fn();
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const simpleDbMock: SimpleDb = {
-  addChatId: jest.fn(),
-  getChatIds: mockedGetChatIds,
+  addSubscriber: mockedAddSubscriber,
+  getChatIdsLoki: mockedGetChatIdsLoki,
 };
 
 function givenChatIds(chatIds: number[]) {
   mockedGetChatIds.mockReturnValue(chatIds);
+  mockedGetChatIdsLoki.mockReturnValue(chatIds);
 }
 
 function botWrapperFactory() {
@@ -141,16 +143,18 @@ describe('BotWrapper', () => {
     onceMock.mockReset();
   });
 
-  it('should add chat id on start command', async () => {
+  it('should add subscriber id on start command', async () => {
     const botWrapper = botWrapperFactory();
     await botWrapper.launchBot();
     const FIRST_NAME = 'FIRST NAME';
+    const USERNAME = 'USERNAME';
     const CHAT_ID = 123;
     const contextMock = {
       reply: jest.fn(),
       message: {
         from: {
           first_name: FIRST_NAME,
+          username: USERNAME,
         },
         chat: {
           id: CHAT_ID,
@@ -163,7 +167,7 @@ describe('BotWrapper', () => {
     await triggerStart(contextMock as Context);
 
     expect(contextMock.reply).toHaveBeenCalledWith(`Hi ${FIRST_NAME}!`);
-    expect(simpleDbMock.addChatId).toHaveBeenCalledWith(CHAT_ID);
+    expect(simpleDbMock.addSubscriber).toHaveBeenCalledWith(CHAT_ID, USERNAME);
   });
 
   it('should analyse text when bot hears text', async () => {
@@ -213,7 +217,7 @@ describe('BotWrapper', () => {
 
     await botWrapper.sendToAll(MESSAGE);
 
-    expect(simpleDbMock.getChatIds).toHaveBeenCalled();
+    expect(simpleDbMock.getChatIdsLoki).toHaveBeenCalled();
     expect(sendMessageMock).toHaveBeenCalledTimes(3);
     expect(sendMessageMock).toHaveBeenCalledWith(11, MESSAGE, {
       parse_mode: 'HTML',
