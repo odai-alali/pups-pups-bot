@@ -47,7 +47,7 @@ lokiDb
       // eslint-disable-next-line no-console
       console.log('bot launched');
 
-      wrapper.sendToAll(
+      wrapper.sendToAllOldChatIds(
         'Hi, I have got a new database, send this command to subscribe to the new DB. /start',
       );
 

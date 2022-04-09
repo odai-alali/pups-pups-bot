@@ -1,6 +1,7 @@
 import { Context, Telegraf } from 'telegraf';
 import SimpleDb from '../persistance/SimpleDb';
 import CommandService from './CommandService';
+import fs from 'fs';
 
 class BotWrapper {
   private bot!: Telegraf;
@@ -66,6 +67,17 @@ class BotWrapper {
     for (const id of this.simpleDb.getChatIdsLoki()) {
       await this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
     }
+  }
+
+  // TODO delete this in the next deployment
+  async sendToAllOldChatIds(message: string): Promise<void> {
+    const ids = fs.readFileSync('./_data/chatIds', 'utf-8');
+    ids
+      .split('\n')
+      .filter((id) => !!id)
+      .map((id) => {
+        this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
+      });
   }
 
   async notifySubscribersForBookableSaturdays(): Promise<void> {
