@@ -60,19 +60,21 @@ function givenQueryReturns(result: unknown) {
   queryMock.mockResolvedValue(result);
 }
 
-const mockedGetChatIds = jest.fn().mockReturnValue([]);
-const mockedGetChatIdsLoki = jest.fn().mockReturnValue([]);
+const mockedGetAllChatIds = jest.fn().mockReturnValue([]);
 const mockedAddSubscriber = jest.fn();
+const mockAnswerHashExists = jest.fn().mockReturnValue(false);
+const mockAddAnswerHashForChatId = jest.fn();
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const simpleDbMock: SimpleDb = {
   addSubscriber: mockedAddSubscriber,
-  getChatIdsLoki: mockedGetChatIdsLoki,
+  getAllChatIds: mockedGetAllChatIds,
+  answerHashExists: mockAnswerHashExists,
+  addAnswerHashForChatId: mockAddAnswerHashForChatId,
 };
 
 function givenChatIds(chatIds: number[]) {
-  mockedGetChatIds.mockReturnValue(chatIds);
-  mockedGetChatIdsLoki.mockReturnValue(chatIds);
+  mockedGetAllChatIds.mockReturnValue(chatIds);
 }
 
 function botWrapperFactory() {
@@ -217,7 +219,7 @@ describe('BotWrapper', () => {
 
     await botWrapper.sendToAll(MESSAGE);
 
-    expect(simpleDbMock.getChatIdsLoki).toHaveBeenCalled();
+    expect(simpleDbMock.getAllChatIds).toHaveBeenCalled();
     expect(sendMessageMock).toHaveBeenCalledTimes(3);
     expect(sendMessageMock).toHaveBeenCalledWith(11, MESSAGE, {
       parse_mode: 'HTML',

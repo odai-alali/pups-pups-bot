@@ -64,8 +64,13 @@ class BotWrapper {
   }
 
   async sendToAll(message: string): Promise<void> {
-    for (const id of this.simpleDb.getChatIdsLoki()) {
-      await this.bot.telegram.sendMessage(id, message, { parse_mode: 'HTML' });
+    for (const id of this.simpleDb.getAllChatIds()) {
+      if (!this.simpleDb.answerHashExists(id, message)) {
+        await this.bot.telegram.sendMessage(id, message, {
+          parse_mode: 'HTML',
+        });
+        this.simpleDb.addAnswerHashForChatId(id, message);
+      }
     }
   }
 

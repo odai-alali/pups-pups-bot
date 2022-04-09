@@ -66,11 +66,19 @@ describe('SimpleDb mit loki', () => {
     const collection = memoryDb.addCollection<SubscriberDoc>(
       CollectionName.SUBSCRIBERS,
     );
-    collection.insert({ chatId: 111, username: 'user1' });
-    collection.insert({ chatId: 222, username: 'user2' });
+    collection.insert({
+      chatId: 111,
+      username: 'user1',
+      sentAnswersHashes: [],
+    });
+    collection.insert({
+      chatId: 222,
+      username: 'user2',
+      sentAnswersHashes: [],
+    });
     const simpleDb = simpleDbFactory();
 
-    const chatIds = simpleDb.getChatIdsLoki();
+    const chatIds = simpleDb.getAllChatIds();
 
     expect(chatIds).toEqual([111, 222]);
   });
