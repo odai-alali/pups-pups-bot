@@ -1,8 +1,9 @@
 import dotenv from 'dotenv';
 import * as path from 'path';
 import { CronJob } from 'cron';
-import BotWrapper from './bot/BotWrapper';
 import { Telegraf } from 'telegraf';
+import logger from 'loglevel';
+import BotWrapper from './bot/BotWrapper';
 import SimpleDb from './persistance/SimpleDb';
 import CommandService from './bot/CommandService';
 import HtmlParser from './parser/HtmlParser';
@@ -22,6 +23,7 @@ const fsDbAdapter = new FSStorage();
 const lokiDb = new Loki(CHAT_IDS_FILE, {
   env: 'NODEJS',
 });
+
 lokiDb
   .initializePersistence({
     adapter: fsDbAdapter,
@@ -43,18 +45,44 @@ lokiDb
     const simpleDb = new SimpleDb(lokiDb);
     const wrapper = new BotWrapper(bot, simpleDb, commandService);
 
+    const cron = new CronJob('*/5 * * * *', async () => {
+      await wrapper.notifySubscribersForBookableSaturdays();
+    });
+
+    const exitHandler = () => {
+      bot.stop();
+      cron.stop();
+      process.exit(0);
+    };
+
+    const unexpectedErrorHandler = (error: Error) => {
+      logger.error(error);
+      bot.stop();
+      cron.stop();
+      process.exit(1);
+    };
+
     wrapper.launchBot().then(() => {
       // eslint-disable-next-line no-console
-      console.log('bot launched');
+      logger.info('bot launched');
 
       wrapper.sendToAllOldChatIds(
-        'Hi, I have got a new database, send this command to subscribe to the new DB. /start',
+        'Hi! I have fixed my Code 🥳' +
+          'click /start and I will keep an eye on the calendars and notify you as soon as I find a free saturday!',
       );
 
-      const cron = new CronJob('0 */6 * * *', async () => {
-        await wrapper.notifySubscribersForBookableSaturdays();
-      });
-
       cron.start();
+    });
+
+    process.on('uncaughtException', unexpectedErrorHandler);
+    process.on('unhandledRejection', unexpectedErrorHandler);
+
+    process.on('SIGTERM', () => {
+      logger.info('SIGTERM received');
+      exitHandler();
+    });
+    process.on('SIGINT', () => {
+      logger.info('SIGINT received');
+      exitHandler();
     });
   });

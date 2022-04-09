@@ -1,4 +1,5 @@
 import { Context, Telegraf } from 'telegraf';
+import { Message } from 'typegram';
 import SimpleDb from '../persistance/SimpleDb';
 import CommandService from './CommandService';
 import fs from 'fs';
@@ -44,13 +45,24 @@ class BotWrapper {
     );
   }
 
+  private static getUsernameFromMessage(message: Message): string {
+    if (message.from) {
+      if (message.from.username) {
+        return message.from?.username;
+      }
+      if (message.from.first_name) {
+        return message.from.first_name;
+      }
+    }
+    return message.chat.id + '';
+  }
+
   async onStartCommand(ctx: Context): Promise<void> {
     if (ctx.message?.chat && ctx.message.from) {
+      const chatId = ctx.message.chat.id;
+      const username = BotWrapper.getUsernameFromMessage(ctx.message);
       await ctx.reply(`Hi ${ctx.message.from.first_name}!`);
-      this.simpleDb.addSubscriber(
-        ctx.message.chat.id as number,
-        ctx.message.from.username as string,
-      );
+      this.simpleDb.addSubscriber(chatId as number, username as string);
     }
   }
 
